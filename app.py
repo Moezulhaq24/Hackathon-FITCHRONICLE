@@ -3,43 +3,21 @@ import anthropic
 import os
 import re
 from dotenv import load_dotenv
+from io import BytesIO
+from fpdf import FPDF
+
+
 load_dotenv()
 
 # cl_api_key = os.getenv("CLAUDE_API_KEY")
 cl_api_key = st.secrets["CLAUDE_API_KEY"]
+
 # Function to get response from Claude for fitness plan
-
-from fpdf import FPDF
-def format_schedule_as_heading(text):
-    # Define a regular expression pattern to match the schedule format
-    pattern = re.compile(r'(\w+day) - (.+?) (\d{1,2}:\d{2} [APM]{2}) - (\d{1,2}:\d{2} [APM]{2})')
-    
-    # Replace the matched schedule with Markdown heading
-    formatted_text = re.sub(pattern, r'## \1 - \2', text)
-    
-    return formatted_text
-# Function to create and save PDF
-def save_to_pdf(response, filename):
-    # Create a PDF object
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Set font and size
-    pdf.set_font("Arial", size=12)
-    
-    # Add a cell for each line of the response
-    for line in response.split('\n'):
-        pdf.multi_cell(0, 10, line)
-    
-    # Save the PDF to a file
-    pdf.output(filename)
-
-
 def get_fitness_plan_response(prompt, api_key):
     client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
         model="claude-3-5-sonnet-20240620",
-        max_tokens=4000,  # Adjust based on prompt length
+        max_tokens=40,  # Adjust based on prompt length
         temperature=0,
         system=f"""
 As an elite fitness trainer, please provide a detailed weekly fitness plan based on the following information. The plan should be organized by specific days of the week (e.g., Monday, Tuesday, etc.) and include the following:
@@ -86,7 +64,7 @@ def get_meal_plan_response(prompt, api_key):
     client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
         model="claude-3-5-sonnet-20240620",
-        max_tokens=4000,  # Adjust based on prompt length
+        max_tokens=40,  # Adjust based on prompt length
         temperature=0,
         system=f"""
 As a nutrition expert, please create a detailed meal plan based on the following diet requirements. The plan should cover all weekdays with a single set of meals that can be used for each day. The meal plan should include:
@@ -293,7 +271,10 @@ Body Type: {body_type}
 Daily Activity Level: {daily_activity_level}
 """
 
-meal_prompt = "Craft a detailed meal plan for breakfast, lunch, and dinner, ensuring balanced nutrition and optimal results. Include rationale behind each recommendation."
+meal_prompt = """
+Craft a detailed meal plan for breakfast, lunch, and dinner, ensuring balanced nutrition and optimal results. Include rationale behind each recommendation.
+Dietary Preferences: {dietary_preferences}
+"""
 
 if st.sidebar.button("Get Personalized Fitness Plan"):
     api_key = os.getenv("CLAUDE_API_KEY")  # Ensure you've set your Claude API key as an environment variable
@@ -301,10 +282,8 @@ if st.sidebar.button("Get Personalized Fitness Plan"):
     # Fetch responses for each section
     fitness_response = get_fitness_plan_response(fitness_prompt, cl_api_key)
     meal_response = get_meal_plan_response(meal_prompt, cl_api_key)
-    save_to_pdf(fitness_response, "Fitness_Plan.pdf")
 
 # Save the meal response to a separate PDF file
-    save_to_pdf(meal_response, "Meal_Plan.pdf")
     # Modify the response to ensure proper formatting
     fitness_response = fitness_response.replace("Based on the information provided, ", "")
     meal_response = meal_response.replace("Based on the information provided, ", "")
@@ -340,3 +319,55 @@ if st.sidebar.button("Get Personalized Fitness Plan"):
     # st.markdown(bmi,unsafe_allow_html=True)
     st.markdown(fitness_response, unsafe_allow_html=True)
     st.markdown(meal_response, unsafe_allow_html=True)
+
+   
+    class PDF(FPDF):
+        def header(self):
+            self.set_font("Arial", 'B', 12)
+            self.cell(0, 10, 'Fitness and Meal Plan', 0, 1, 'C')
+            self.ln(10)
+
+        def footer(self):
+            self.set_y(-15)
+            self.set_font("Arial", 'I', 8)
+            self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+    def save_combined_pdf(fitness_response, meal_response, buffer):
+        pdf = PDF()
+        pdf.add_page()
+        
+        # Add fitness plan section
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, 'Fitness Plan', 0, 1, 'L')
+        pdf.ln(5)
+        
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, fitness_response)
+        
+        pdf.add_page()
+        
+        # Add meal plan section
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, 'Meal Plan', 0, 1, 'L')
+        pdf.ln(5)
+        
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, meal_response)
+        
+        # Output PDF to buffer
+        buffer.write(pdf.output(dest='S').encode('latin1'))
+        buffer.seek(0)  # Move to the beginning of the buffer for reading
+
+    # Create in-memory buffer
+    buffer_combined = BytesIO()
+
+    # Save combined PDF data to buffer
+    save_combined_pdf(fitness_response, meal_response, buffer_combined)
+
+    # Provide download button
+    st.download_button(
+        label="Download Combined Fitness and Meal Plan PDF",
+        data=buffer_combined.getvalue(),
+        file_name="Combined_Fitness_and_Meal_Plan.pdf",
+        mime="application/pdf"
+    )
