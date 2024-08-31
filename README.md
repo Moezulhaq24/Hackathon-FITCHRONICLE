@@ -67,6 +67,9 @@ FitChronicle is a comprehensive fitness planner designed to track your journey t
 
 4. **View Results**: The app will display your personalized fitness and meal plans, formatted with clear headings and detailed recommendations.
 
+## Demo Link 
+   - **URL** : https://fit-chronicles.streamlit.app/   
+
 ## Configuration
 
 - **API Key**: Ensure you have a valid Claude API key. Store it in the `.env` file as described in the Installation section.
