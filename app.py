@@ -1,12 +1,40 @@
 import streamlit as st
 import anthropic
 import os
+import re
 from dotenv import load_dotenv
 load_dotenv()
 
-# cl_api_key = os.getenv("CLAUDE_API_KEY")
-cl_api_key = st.secrets["CLAUDE_API_KEY"]
+cl_api_key = os.getenv("CLAUDE_API_KEY")
+#cl_api_key = st.secrets["CLAUDE_API_KEY"]
 # Function to get response from Claude for fitness plan
+
+from fpdf import FPDF
+def format_schedule_as_heading(text):
+    # Define a regular expression pattern to match the schedule format
+    pattern = re.compile(r'(\w+day) - (.+?) (\d{1,2}:\d{2} [APM]{2}) - (\d{1,2}:\d{2} [APM]{2})')
+    
+    # Replace the matched schedule with Markdown heading
+    formatted_text = re.sub(pattern, r'## \1 - \2', text)
+    
+    return formatted_text
+# Function to create and save PDF
+def save_to_pdf(response, filename):
+    # Create a PDF object
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Set font and size
+    pdf.set_font("Arial", size=12)
+    
+    # Add a cell for each line of the response
+    for line in response.split('\n'):
+        pdf.multi_cell(0, 10, line)
+    
+    # Save the PDF to a file
+    pdf.output(filename)
+
+
 def get_fitness_plan_response(prompt, api_key):
     client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
@@ -273,19 +301,38 @@ if st.sidebar.button("Get Personalized Fitness Plan"):
     # Fetch responses for each section
     fitness_response = get_fitness_plan_response(fitness_prompt, cl_api_key)
     meal_response = get_meal_plan_response(meal_prompt, cl_api_key)
-    
+    save_to_pdf(fitness_response, "Fitness_Plan.pdf")
+
+# Save the meal response to a separate PDF file
+    save_to_pdf(meal_response, "Meal_Plan.pdf")
     # Modify the response to ensure proper formatting
     fitness_response = fitness_response.replace("Based on the information provided, ", "")
     meal_response = meal_response.replace("Based on the information provided, ", "")
-    
+
+    # Adding headingsFT
+    fitness_response = fitness_response.replace("BMI Calculation:", "### BMI Calculation:")
+    fitness_response = fitness_response.replace("Weekly Fitness Plan:", "## Weekly Fitness Plan")
+    fitness_response = fitness_response.replace("Monday", "**Monday**")
+    fitness_response = fitness_response.replace("Tuesday", "**Tuesday**")
+    fitness_response = fitness_response.replace("Wednesday", "**Wednesday**")
+    fitness_response = fitness_response.replace("Thursday", "**Thursday**")
+    fitness_response = fitness_response.replace("Friday", "**Friday**")
+    fitness_response = fitness_response.replace("Saturday", "**Saturday**")
+    fitness_response = fitness_response.replace("Sunday", "**Sunday**")
+
+    fitness_response = fitness_response.replace("Equipment Needed:", "### Equipment Needed")
+    fitness_response = fitness_response.replace("Progression:", "### Progression")
+    fitness_response = fitness_response.replace("Additional Recommendations:", "### Additional Recommendations")
+
     # Adding headings
 
-    fitness_response = fitness_response.replace("Exercise Routine", "## Exercise Routine")
-    meal_response = meal_response.replace("Meal Plan", "## Meal Plan")
+    
+    meal_response = meal_response.replace("Weekday Meal Plan:", "## Weekday Meal Plan")
     meal_response = meal_response.replace("Breakfast:", "### Breakfast")
     meal_response = meal_response.replace("Lunch:", "### Lunch")
     meal_response = meal_response.replace("Dinner:", "### Dinner")
-    meal_response = meal_response.replace("Snacks:", "### Snacks")
+    meal_response = meal_response.replace("Snacks (choose two per day):", "### Snacks")
+    #meal_response = re.sub(r"Snacks:(.*)", r"### Snacks\1", meal_response)
 
     
     
