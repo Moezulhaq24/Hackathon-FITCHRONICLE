@@ -1,86 +1,85 @@
-# FitChronicle 📓💪
+# FitChronicle
 
-FitChronicle is a comprehensive fitness planner designed to track your journey towards optimal health and performance. This Streamlit app allows users to input personal fitness details and receive personalized fitness and meal plans generated using Claude AI.
+FitChronicle is a comprehensive fitness planner application built with Streamlit. It provides users with personalized fitness and meal plans based on their inputs. The application utilizes the Claude AI API for generating fitness and meal plans, and offers the functionality to download these plans as a PDF file.
 
 ## Features
 
-- **Personalized Fitness Plan**: Generates a detailed weekly fitness plan based on user inputs.
-- **Personalized Meal Plan**: Provides a meal plan including breakfast, lunch, dinner, and snacks.
-- **Customizable Inputs**: Users can specify height, weight, age, fitness goals, medical history, and more.
-- **Enhanced Styling**: App features a gradient background, custom title, and styled sidebar inputs.
+- **Personalized Fitness Plan:** Generates a weekly fitness plan tailored to the user's height, weight, age, fitness goals, and other inputs.
+- **Meal Plan Generation:** Creates a detailed meal plan that includes breakfast, lunch, dinner, and snacks, based on dietary preferences and restrictions.
+- **PDF Download:** Allows users to download their personalized fitness and meal plans as a combined PDF document.
+- **Custom Styling:** Includes a gradient background, custom sidebar styling, and responsive design for a better user experience.
 
 ## Requirements
 
-- Python 3.7 or higher
+- Python 3.8+
 - Streamlit
-- `anthropic` (for interacting with Claude AI)
-- `python-dotenv` (for loading environment variables)
+- Anthropoc API (Claude AI)
+- Python-dotenv
+- FPDF
+- Any other dependencies listed in `requirements.txt`
 
 ## Installation
 
-1. **Clone the repository**:
+1. **Clone the repository:**
+
    ```bash
-   git clone https://github.com/your-username/fitchronicle.git
+   git clone https://github.com/yourusername/fitchronicle.git
+   ```
+
+2. **Navigate to the project directory:**
+
+   ```bash
    cd fitchronicle
    ```
 
-2. **Create a virtual environment** (optional but recommended):
+3. **Create and activate a virtual environment:**
+
    ```bash
    python -m venv .venv
+   source .venv/bin/activate  # On Windows use `.venv\Scripts\activate`
    ```
 
-3. **Activate the virtual environment**:
-   - On Windows:
-     ```bash
-     .venv\Scripts\activate
-     ```
-   - On macOS/Linux:
-     ```bash
-     source .venv/bin/activate
-     ```
+4. **Install the dependencies:**
 
-4. **Install required packages**:
    ```bash
-   pip install streamlit anthropic python-dotenv
+   pip install -r requirements.txt
    ```
 
-5. **Create a `.env` file** in the root directory of your project with the following content:
-   ```ini
+5. **Create a `.env` file in the project root and add your Claude API key:**
+
+   ```
    CLAUDE_API_KEY=your_claude_api_key_here
-   ```
-
-6. **Run the Streamlit app**:
-   ```bash
-   streamlit run app.py
    ```
 
 ## Usage
 
-1. **Open the app**: Navigate to the URL provided by Streamlit in your terminal (usually `http://localhost:8501`).
+1. **Run the Streamlit app:**
 
-2. **Fill out the sidebar inputs**:
-   - Enter your height, weight, age, medical history, fitness goals, and other details.
-   - Specify dietary preferences, available time for exercise, and access to equipment.
+   ```bash
+   streamlit run app.py
+   ```
 
-3. **Get Personalized Plans**:
-   - Click on the "Get Personalized Fitness Plan" button to generate your customized fitness and meal plans.
+2. **Access the app in your web browser at:**
 
-4. **View Results**: The app will display your personalized fitness and meal plans, formatted with clear headings and detailed recommendations.
+   ```
+   http://localhost:8501
+   ```
 
-## Demo Link 
-   - **URL** : https://fit-chronicles.streamlit.app/   
+3. **Fill out the form in the sidebar with your personal fitness information and click "Get Personalized Fitness Plan".**
 
-## Configuration
+4. **Download the combined PDF containing your personalized fitness and meal plans using the provided download button.**
 
-- **API Key**: Ensure you have a valid Claude API key. Store it in the `.env` file as described in the Installation section.
+## Code Overview
 
-- **CSS Customization**: The app includes custom CSS for styling. Modify the `st.markdown` section with your preferred styles if needed.
+- **`app.py`:** Main Streamlit application file containing the logic for fetching fitness and meal plans, styling, and PDF generation.
+- **`requirements.txt`:** Lists the Python packages required to run the application.
+- **`.env`:** Configuration file to store environment variables such as API keys.
 
-## Contributing
+## Troubleshooting
 
-If you would like to contribute to this project, please fork the repository and submit a pull request with your changes. Ensure that your code adheres to the existing style and passes all tests.
+- **Dependency Errors:** Ensure all dependencies are correctly listed in `requirements.txt` and that your virtual environment is activated.
+- **API Key Issues:** Verify that your Claude API key is correctly set in the `.env` file and that it's valid.
 
-
-Happy fitness planning with FitChronicle! 💪📓
-```
-
+## Contributors
+   Sarim Ul Haq  Gmail: sarimulhaq331@gmail.com
+   Mahnoor       Gmail: mah.syed04@gmail.com
