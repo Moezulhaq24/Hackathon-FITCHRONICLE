@@ -2,4 +2,3 @@ streamlit
 anthropic
 python-dotenv
 fpdf
-io
