@@ -17,7 +17,7 @@ def get_fitness_plan_response(prompt, api_key):
     client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
         model="claude-3-5-sonnet-20240620",
-        max_tokens=40,  # Adjust based on prompt length
+        max_tokens=2500,  # Adjust based on prompt length
         temperature=0,
         system=f"""
 As an elite fitness trainer, please provide a detailed weekly fitness plan based on the following information. The plan should be organized by specific days of the week (e.g., Monday, Tuesday, etc.) and include the following:
@@ -64,7 +64,7 @@ def get_meal_plan_response(prompt, api_key):
     client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
         model="claude-3-5-sonnet-20240620",
-        max_tokens=40,  # Adjust based on prompt length
+        max_tokens=2500,  # Adjust based on prompt length
         temperature=0,
         system=f"""
 As a nutrition expert, please create a detailed meal plan based on the following diet requirements. The plan should cover all weekdays with a single set of meals that can be used for each day. The meal plan should include:
