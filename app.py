@@ -5,8 +5,8 @@ import re
 from dotenv import load_dotenv
 load_dotenv()
 
-cl_api_key = os.getenv("CLAUDE_API_KEY")
-#cl_api_key = st.secrets["CLAUDE_API_KEY"]
+# cl_api_key = os.getenv("CLAUDE_API_KEY")
+cl_api_key = st.secrets["CLAUDE_API_KEY"]
 # Function to get response from Claude for fitness plan
 
 from fpdf import FPDF
